@@ -1,0 +1,12 @@
+set recolor false
+set statusbar-home-end true
+set synctex true
+set selection-clipboard clipboard
+
+# Transparent window background
+set window-background-opacity 0.7
+
+# Page colors
+set default-bg rgba(0,0,0,0.7)
+set default-fg "#cdd6f4"
+set recolor-lightcolor rgba(0,0,0,0)

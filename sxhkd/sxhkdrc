@@ -1,0 +1,133 @@
+# ==========================================
+# sxhkd - bspwm hotkeys
+# ==========================================
+
+# --- Terminals & Launchers ---
+super + Return
+    kitty
+
+super + space
+    ~/.config/bspwm/scripts/app_launcher.sh
+
+super + shift + l
+    ~/.config/bspwm/scripts/app_launcher.sh
+
+# --- Window Focus (Arrows) ---
+# Try to focus directionally, if not, cycle to the next window
+super + {Left,Down,Up,Right}
+    bspc node -f {west,south,north,east} || bspc node -f next.local
+
+# --- Cycle Windows ---
+super + Tab
+    bspc node -f next.local
+super + shift + Tab
+    bspc node -f prev.local
+
+# --- Swap Windows (Shift + Arrows) ---
+super + shift + {Left,Down,Up,Right}
+    bspc node -s {west,south,north,east}
+
+# --- Workspaces (Desktops) ---
+# Switch to desktop
+super + {1-9,0}
+    bspc desktop -f '^{1-9,10}'
+
+# Move window to desktop
+super + shift + {1-9,0}
+    bspc node -d '^{1-9,10}'
+
+# --- Keyboard Resizing (Alt + Arrows) ---
+# Make larger
+super + alt + {Left,Down,Up,Right}
+    bspc node -z {left -20 0,bottom 0 20,top 0 -20,right 20 0}
+
+# Make smaller (Shrink)
+super + alt + shift + {Left,Down,Up,Right}
+    bspc node -z {left 20 0,bottom 0 -20,top 0 20,right -20 0}
+
+# --- Move Floating Windows (Ctrl + Arrows) ---
+super + ctrl + {Left,Down,Up,Right}
+    bspc node -v {-20 0,0 20,0 -20,20 0}
+
+# --- Window Management ---
+super + q
+    bspc node -c
+
+super + f
+    bspc node -t ~fullscreen
+
+super + s
+    bspc node -t ~floating
+
+super + t
+    bspc node -t tiled
+
+super + m
+    bspc node -t ~monocle
+
+# --- Reset Gaps ---
+super + 0
+    bspc config window_gap 10
+
+# --- Help Window ---
+super + h
+    kitty --hold -e less -R ~/bspwm_help.md
+
+super + F1
+    kitty --hold -e less -R ~/bspwm_help.md
+
+# --- Multimedia Keys ---
+XF86AudioRaiseVolume
+    pactl set-sink-volume @DEFAULT_SINK@ +5%; ~/.config/bspwm/scripts/volume_notify.sh
+
+XF86AudioLowerVolume
+    pactl set-sink-volume @DEFAULT_SINK@ -5%; ~/.config/bspwm/scripts/volume_notify.sh
+
+XF86AudioMute
+    pactl set-sink-mute @DEFAULT_SINK@ toggle; ~/.config/bspwm/scripts/volume_notify.sh
+
+XF86MonBrightnessUp
+    brightnessctl set +10%; ~/.config/bspwm/scripts/brightness_notify.sh
+
+XF86MonBrightnessDown
+    brightnessctl set 10%-; ~/.config/bspwm/scripts/brightness_notify.sh
+
+# --- Screenshots ---
+Print
+    spectacle --current --output "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png"
+
+super + Print
+    spectacle --region --output "$HOME/Pictures/Screenshots/$(date +%Y%m%d_%H%M%S).png"
+
+# --- Menus ---
+super + w
+    ~/.config/bspwm/scripts/wallpaper_selector.sh
+
+super + n
+    plasmawindowed org.kde.plasma.networkmanagement
+
+super + i
+    ~/.config/bspwm/scripts/status_notify.sh
+
+super + v
+    pavucontrol
+
+super + b
+    blueman-manager
+
+super + p
+    ~/.config/bspwm/scripts/screen_mirror.sh
+
+super + shift + Escape
+    ~/.config/bspwm/scripts/power_menu.sh
+
+# --- System ---
+super + l
+    magick "/home/michal/Pictures/lock.jpg" -resize 1920x1080^ -gravity center -extent 1920x1080 /tmp/i3lock.png && i3lock -i /tmp/i3lock.png
+
+super + Escape
+    pkill -USR1 -x sxhkd; bspc wm -r
+
+# --- Mouse Controls ---
+super + button{1,2,3}
+    bspc node -f; bspc node -{start,stop}_{move,zoom,resize}

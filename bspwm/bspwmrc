@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+# --- Monitor Setup ---
+# Using your specific monitor name found via xrandr
+bspc monitor eDP-1 -d 1 2 3 4 5 6 7 8 9 10
+
+# --- Touchpad Settings ---
+# Enable tap-to-click, natural scrolling, and two-finger right click
+TOUCHPAD=$(xinput list --name-only | grep -i "touchpad" | head -1)
+if [ -n "$TOUCHPAD" ]; then
+    xinput set-prop "$TOUCHPAD" "libinput Tapping Enabled" 1
+    xinput set-prop "$TOUCHPAD" "libinput Natural Scrolling Enabled" 1
+    xinput set-prop "$TOUCHPAD" "libinput Click Method Enabled" 0 1 # Two-finger click
+fi
+
+# --- Autostart ---
+# Start the hotkey daemon (CRITICAL: bspwm won't respond to keys without this)
+pgrep -x sxhkd > /dev/null || sxhkd &
+
+# Start notification daemon
+pgrep -x dunst >/dev/null || dunst &
+
+# Start the compositor (using a safer backend)
+pgrep -x picom >/dev/null || picom --config "$HOME/.config/picom/picom.conf" -b &
+
+# Start Bluetooth applet
+pgrep -x blueman-applet >/dev/null || blueman-applet &
+
+# Network tray applet
+pgrep -x nm-applet >/dev/null || nm-applet &
+
+# KDE network applet
+pgrep -f 'plasmawindowed org.kde.plasma.networkmanagement' >/dev/null || plasmawindowed org.kde.plasma.networkmanagement &
+
+# Start Polkit (KDE version since you are on Fedora KDE)
+pgrep -f polkit-kde-authentication-agent-1 >/dev/null || /usr/libexec/kf6/polkit-kde-authentication-agent-1 &
+
+# Start battery monitor script
+pgrep -f battery_watch.sh >/dev/null || $HOME/.config/bspwm/scripts/battery_watch.sh &
+
+# --- Wallpaper (feh) ---
+if [ -f "$HOME/Pictures/default_wallpaper.jpg" ]; then
+    feh --bg-fill "$HOME/Pictures/default_wallpaper.jpg"
+else
+    feh --bg-fill --randomize ~/Pictures/wallpapers/* 2>/dev/null || \
+    feh --bg-fill ~/Pictures/images.jpg 2>/dev/null || true
+fi
+
+# --- Window Manager Settings ---
+bspc config border_width         2
+bspc config window_gap          10
+bspc config split_ratio          0.52
+bspc config borderless_monocle   true
+bspc config gapless_monocle      true
+
+# Colors
+bspc config normal_border_color  "#444444"
+bspc config focused_border_color "#7cafc2"
+bspc config active_border_color  "#7cafc2"
+
+# Window Rules
+bspc rule -a bspwm_help state=floating sticky=on
